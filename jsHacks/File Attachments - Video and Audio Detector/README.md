@@ -1,6 +1,8 @@
 # About Video and Audio Detector
 
-This jsHack will monitor file attachments or file embeds which contain one of a list of file extensions.  if a media file is ddetected, a lightbox will display prompting the user to use the "proper" method for embedding videos.
+This jsHack will monitor file attachments or file embeds which contain one of a list of file extensions.  If a media file is ddetected, a lightbox will display prompting the user to use the "proper" method for embedding videos.
+
+This works in numerous places, including announcements, content, forums, blogs, journals, and assessments.  It will let instructor attachments to an assignment through, but will generate an email if it is enabled.  Users can still upload directly into the content collection.  We have not had issues with attachments/embeds in Grade Center feedback, so this does not address this spot.
 
 # Contents
 
@@ -9,9 +11,12 @@ This jsHack will monitor file attachments or file embeds which contain one of a 
 
 # Customizations
 
-There are a number of elements which should be customized in this jsHack
+There are a number of elements which should be customized in this jsHack.
 
-## media_extensions
+## Scope
+This hack is focused on non-student roles.  If you want to use this on students as well, you can make the change in the Javascript Hacks Manager.
+
+## Media Extensions
 
 In the cscc-file_upload.js file on line 1, you will find the list of file extensions.  These are pipe delimited.  Add or remove extensions as you see fit.  This list is for file attachments.
 
@@ -32,3 +37,14 @@ Once the email relay is set-up on your server, update the following:
 - In the cscc-file_embed.js file on line 48, replace [email_url] with the URL to the mail relay
 - In the cscc-file_upload.js file, uncomment line 70 and line 90
 - In the cscc-file_embed.js file, uncomment line 19
+
+## Email.php
+Within the email template, you will need to change the following:
+- On line 8, change [domain] to your Blackboard DNS.  This is optional, but you can include a link to the Course Home Directory in your email if you like.
+- On line 30, change the email address of the recipent
+- On line 31, change the email subject
+- On lines 32-37, customize the message
+- On line 40, change the email address of the recipient (this one goes in the email's Headers)
+- On line 41, change who the email is from (default is the end user who attempted to upload the file(s))
+- On line 42, change the cc: email(s) and/or uncomment it; separate more than one with a comma
+- On line 43, change the bcc: email(s) and/or uncomment it; separate more than one with a comma
