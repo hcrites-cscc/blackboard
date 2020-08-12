@@ -27,7 +27,7 @@
 	$varNow = new DateTime;
 	
 	if($email != "") {
-		$varTo = "IT Support Center <helpdesk@cscc.edu>";
+		$varTo = "IT Support Center <user@school.edu>";
 		$varSubject = "Kaltura Assistance";
 		$varMessage = "<p>Name: ".$name."</p>
 			<p>Email: ".$email."</p>
@@ -37,10 +37,10 @@
 			<ul>".$files."</ul>";
 				
 		$varHeaders = 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
-		$varHeaders .= 'To: IT Support Center <helpdesk@cscc.edu>'. "\r\n";
+		$varHeaders .= 'To: IT Support Center <user@school.edu>'. "\r\n";
 		$varHeaders .= 'From: '.$name.' <'.$email.'>' . "\r\n";
-//		$varHeaders .= 'Cc: hcrites@cscc.edu'."\r\n";		
-		$varHeaders .= 'Bcc: hcrites@cscc.edu'."\r\n";		
+//		$varHeaders .= 'Cc: user@school.edu'."\r\n";		
+		$varHeaders .= 'Bcc: user@school.edu'."\r\n";		
 	
 		if(mail($varTo, $varSubject, $varMessage, $varHeaders)) {
 			echo "success";
