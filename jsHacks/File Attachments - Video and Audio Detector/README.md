@@ -6,7 +6,8 @@ This works in numerous places, including announcements, content, forums, blogs, 
 
 # Contents
 
-- file_uload.1.2.zip is version 1.2 of the Video and Audio Detector
+- file_upload.1.2.zip is version 1.2 of the Video and Audio Detector which is used with the pre-3900.0.0 content editor
+- file_upload.1.3.zip is version 1.3 of the Video and Audio Detector which is used with the 3900.0.0+ content editor
 - email.php is a template to use if you wish to send email to support (etc)
 
 # Customizations
@@ -18,25 +19,45 @@ This hack is focused on non-student roles.  If you want to use this on students 
 
 ## Media Extensions
 
+file_upload.1.2.zip
 In the cscc-file_upload.js file on line 1, you will find the list of file extensions.  These are pipe delimited.  Add or remove extensions as you see fit.  This list is for file attachments.
 
 In the cscc-file_embed.js file on line 1, you will find the list of file extensions.  These are pipe delimited.  Add or remove extensions as you see fit.  This list is for file embeds.
 
+file_upload.1.3.zip
+
+In the cscc-file_upload.js file on line 1, you will find the list of file extensions.  These are pipe delimited.  Add or remove extensions as you see fit.  This list is for file attachments.
+
 ## Message to End User
+
+file_upload.1.2.zip
 
 In the cscc-file_upload.js file on line 105, you will find the message which displays to the user when a media file is detected.  This message is for file attachments.  It accepts HTML (don't forget to use escape characters on single quotes).  You may also update line 103 (the title of the lightbox).
 
 In the cscc-file_embed.js file on line 35, you will find the message which displays to the user when a media file is detected.  This message is for file embeds.  It accepts HTML (don't forget to use escape characters on single quotes). You may also update line 33 (the title of the lightbox).
+
+file_upload.1.3.zip
+
+In the cscc-file_upload.js file on line 115, you will find the message which displays to the user when a media file is detected.  This message is for file attachments.  It accepts HTML (don't forget to use escape characters on single quotes).  You may also update line 113 (the title of the lightbox).
+
 
 ## Email Options
 
 If you wish for an email to be sent when someone is "caught" uploading media files, you will need to have some server-side code running on an external server to relay the email.  The file email.php provides a handy template using PHP.
 
 Once the email relay is set-up on your server, update the following:
+
+file_upload.1.2.zip
+
 - In the cscc-file_upload.js file on line 118, replace [email_url] with the URL to the mail relay
 - In the cscc-file_embed.js file on line 48, replace [email_url] with the URL to the mail relay
 - In the cscc-file_upload.js file, uncomment line 70 and line 90
 - In the cscc-file_embed.js file, uncomment line 19
+
+file_upload.1.3.zip
+- In the cscc-file_upload.js file on line 128, replace [email_url] with the URL to the mail relay
+- In the cscc-file_upload.js file, uncomment line 80 and line 100
+
 
 ## Email.php
 Within the email template, you will need to change the following:
