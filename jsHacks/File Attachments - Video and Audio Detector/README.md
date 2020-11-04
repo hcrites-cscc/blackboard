@@ -38,7 +38,7 @@ In the cscc-file_embed.js file on line 35, you will find the message which displ
 
 file_upload.1.3.zip
 
-In the cscc-file_upload.js file on line 115, you will find the message which displays to the user when a media file is detected.  This message is for file attachments.  It accepts HTML (don't forget to use escape characters on single quotes).  You may also update line 113 (the title of the lightbox).
+In the cscc-file_upload.js file on line 114, you will find the message which displays to the user when a media file is detected.  This message is for file attachments.  It accepts HTML (don't forget to use escape characters on single quotes).  You may also update line 123 (the title of the lightbox).
 
 
 ## Email Options
@@ -55,8 +55,8 @@ file_upload.1.2.zip
 - In the cscc-file_embed.js file, uncomment line 19
 
 file_upload.1.3.zip
-- In the cscc-file_upload.js file on line 128, replace [email_url] with the URL to the mail relay
-- In the cscc-file_upload.js file, uncomment line 80 and line 100
+- In the cscc-file_upload.js file on line 127, replace [email_url] with the URL to the mail relay
+- In the cscc-file_upload.js file, uncomment line 79 and line 99
 
 
 ## Email.php
