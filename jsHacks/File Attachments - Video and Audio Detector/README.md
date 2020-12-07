@@ -8,6 +8,7 @@ This works in numerous places, including announcements, content, forums, blogs, 
 
 - file_upload.1.2.zip is version 1.2 of the Video and Audio Detector which is used with the pre-3900.0.0 content editor
 - file_upload.1.3.zip is version 1.3 of the Video and Audio Detector which is used with the 3900.0.0+ content editor
+- file_upload.1.3-ubn.zip is an Ultra Base Nav version of 1.3 with "Learning System Page" selected for the rendering hook.
 - email.php is a template to use if you wish to send email to support (etc)
 
 # Customizations
