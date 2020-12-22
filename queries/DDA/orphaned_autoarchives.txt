@@ -23,11 +23,11 @@ In the query, replace the following variables with your institution-specific val
 ============================================
 Returns:
 ============================================
-	FOLDER_NAME: name of the autoArchive folder
+  FOLDER_NAME: name of the autoArchive folder
   FILE_PATH: full path of the autoArchive folder
   FILE_ID: the XID value of the autoArchive folder
   PARENT_ID: the XID value of the autoArchive parent folder (should also be the same as /internal/autoArchive/)
-	FILE_SIZE: size of the folder (note: Bb is inconsistent with this calculation)
+  FILE_SIZE: size of the folder (note: Bb is inconsistent with this calculation)
 	
 
 
