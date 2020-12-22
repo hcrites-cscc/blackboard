@@ -1,0 +1,50 @@
+============================================
+Find all orphaned auto archives in Blackboard
+============================================
+ * @author  hcrites@cscc.edu (Heather Crites)
+ * @created 07/15/2020
+============================================
+
+
+
+============================================
+Notes:
+============================================
+SaaS DDA uses multiple databases for cms_doc and the base schemas. To connect the two databases, I use the dblink function in PostgreSQL. If your instance does not have this installed, open a ticket to request it.
+
+In the query, replace the following variables with your institution-specific values:
+	[your_saas_schema]: use your specific SaaS schema value
+	[your_dda_username]: use your DDA username
+	[your_dda_password]: use your DDA password
+
+
+
+
+============================================
+Returns:
+============================================
+	FOLDER_NAME: name of the autoArchive folder
+  FILE_PATH: full path of the autoArchive folder
+  FILE_ID: the XID value of the autoArchive folder
+  PARENT_ID: the XID value of the autoArchive parent folder (should also be the same as /internal/autoArchive/)
+	FILE_SIZE: size of the folder (note: Bb is inconsistent with this calculation)
+	
+
+
+	
+============================================
+Query:
+============================================
+
+select course_main.course_id, xyf_urls.file_name, xyf_urls.full_path, xyf_urls.file_id, xyf_urls.parent_id, xyf_urls.path_id, xyf_files.file_size
+from xyf_urls
+inner join xyf_files on xyf_urls.file_id = xyf_files.file_id
+left outer join (
+	select course_id
+	from dblink('dbname=[your_saas_schema] user=[your_dda_username] password=[your_dda_password]', 'select course_id from course_main')
+	as course_main(course_id text)
+) as course_main on course_main.course_id = left(xyf_urls.file_name, -9)
+where file_type_code = 'D'
+and full_path like '/internal/autoArchive/%'
+and course_id is null
+order by full_path
