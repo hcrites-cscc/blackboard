@@ -1,4 +1,22 @@
 ============================================
+Get assessment counts by course
+============================================
+ * @author  hcrites@cscc.edu (Heather Crites)
+ * @created 09/10/2020	
+============================================
+
+
+
+
+============================================
+Notes:
+============================================
+This is useful for identifying courses with a large number of assessments. The unique counts may be useful identifying courses with duplicate content.
+
+
+
+
+============================================
 Returns:
 ============================================
   COURSE_PK1: the pk1 value for the course
