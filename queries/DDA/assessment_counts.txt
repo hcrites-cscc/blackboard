@@ -41,9 +41,9 @@ select
 	, count(qti_asi_data.pk1) filter (where qti_asi_data.bbmd_assessmenttype = 1) as test_count
 	, count(distinct qti_asi_data.title) filter (where qti_asi_data.bbmd_assessmenttype = 1) as test_unique_count
 	, count(qti_asi_data.pk1) filter (where qti_asi_data.bbmd_assessmenttype = 4) as pool_count
-	, count(distinct qti_asi_data.title) filter (where qti_asi_data.bbmd_assessmenttype = 1) as pool_unique_count
+	, count(distinct qti_asi_data.title) filter (where qti_asi_data.bbmd_assessmenttype = 4) as pool_unique_count
 	, count(qti_asi_data.pk1) filter (where qti_asi_data.bbmd_assessmenttype = 3) as survey_count
-	, count(distinct qti_asi_data.title) filter (where qti_asi_data.bbmd_assessmenttype = 1) as survey_unique_count
+	, count(distinct qti_asi_data.title) filter (where qti_asi_data.bbmd_assessmenttype = 3) as survey_unique_count
 from qti_asi_data
 inner join course_main on course_main.pk1 = qti_asi_data.crsmain_pk1
 where qti_asi_data.bbmd_asi_type = 1 and qti_asi_data.bbmd_assessmenttype in (1,3,4)
