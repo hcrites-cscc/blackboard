@@ -1,0 +1,1 @@
+new_directory	old_directory	files_delimited_by_pipe

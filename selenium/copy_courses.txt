@@ -1,0 +1,1 @@
+source_course_id	destination_course_id

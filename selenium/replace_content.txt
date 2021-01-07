@@ -1,0 +1,1 @@
+course_id	content_id	content_handler	replace_content

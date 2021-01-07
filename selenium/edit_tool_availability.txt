@@ -1,0 +1,1 @@
+course_pk1	tool_pk1_delimited_by_pipe
