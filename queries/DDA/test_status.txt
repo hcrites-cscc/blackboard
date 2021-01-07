@@ -3,6 +3,7 @@ Identify which tests are deployed / undeployed
 ============================================
  * @author  hcrites@cscc.edu (Heather Crites)
  * @created 09/10/2020	
+ * @updated 01/07/2021
 ============================================
 
 
@@ -27,8 +28,9 @@ Returns:
   COURSE_ID: the course_id of the course
   QAD_PK1: the pk1 value of the test
   TITLE: the title of the test
-  CA_PK1: the pk1 value of the exam deployment (null if not deployed)
-  USING_IND: either 'using' or 'not using'
+  QUESTION_COUNT: the number of questions in the test
+  DEPLOYED_IND: either 'deployed' or 'not deployed' - denotes whether the test has been deployed
+  USING_IND: either 'using' or 'not using' - denotes the number of questions being used as a block in another test
 	
 	
 
@@ -36,16 +38,30 @@ Returns:
 ============================================
 Query:
 ============================================
-select qti_asi_data.crsmain_pk1 as course_pk1
+select distinct 
+	qti_asi_data.crsmain_pk1 as course_pk1
 	, course_main.course_id
 	, qti_asi_data.pk1 as qad_pk1
 	, qti_asi_data.title
-	, course_assessment.pk1 as ca_pk1
-	, case when course_assessment.pk1 is null then 'not using' else 'using' end as using_ind
-from qti_asi_data
+	, coalesce(block.question_count,0) as question_count
+	, case when course_assessment.pk1 is null then 'not deployed' else 'deployed' end as deployed_ind
+	, case when block.block_count is null then 'not using' else 'using' end as using_ind
+from qti_asi_data 
 left outer join course_assessment on course_assessment.qti_asi_data_pk1 = qti_asi_data.pk1
 inner join course_main on course_main.pk1 = qti_asi_data.crsmain_pk1
-where qti_asi_data.crsmain_pk1 = [course_pk1] 
+left outer join (
+	select test.pk1
+		, count(block.pk1) as block_count
+		, count(question.pk1) as question_count
+	from qti_asi_data as test
+	inner join qti_asi_data as section on section.parent_pk1 = test.pk1
+	inner join qti_asi_data as question on question.parent_pk1 = section.pk1
+	left outer join qti_block_mapping as block on block.question_pk1 = question.pk1
+	where test.crsmain_pk1 = [course_pk1]  
+	group by test.pk1
+	limit 1000
+) as block on block.pk1 = qti_asi_data.pk1
+where qti_asi_data.crsmain_pk1 = [course_pk1]  
    and qti_asi_data.parent_pk1 is null
-   and bbmd_assessmenttype = 1
+   and qti_asi_data.bbmd_assessmenttype = 1
 order by qti_asi_data.title
