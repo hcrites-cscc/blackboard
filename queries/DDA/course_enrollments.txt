@@ -1,0 +1,43 @@
+============================================
+List of course enrollments by course
+============================================
+ * @author  hcrites@cscc.edu (Heather Crites)
+ * @created 01/15/2021
+============================================
+
+
+
+
+============================================
+Notes:
+============================================
+A quick list of enrollments
+
+In the query, replace the following variables with your institution-specific values:
+	[course_id]: enter the specific course_main.course_id value to look up a specific course(s)
+
+
+
+
+
+============================================
+Returns:
+============================================
+  COURSE_BATCH_UID: the batch_uid value of the course
+  USER_BATCH_UID: the batch_uid value of the user
+  COURSE_STATUS: the row_status for course_main - 0 (enabled) or 2 (disabled)
+  USER_STATUS: the row_status for users - 0 (enabled) or 2 (disabled)
+  ENROLLMENT_STATUS: the row_status for course_users - 0 (enabled) or 2 (disabled)
+  
+	
+	
+
+	
+============================================
+Query:
+============================================
+select course_main.batch_uid as course_batch_uid, users.batch_uid as user_batch_uid, course_main.row_status as course_status, users.row_status as user_status, course_users.row_status as enrollment_status
+from course_users
+inner join course_main on course_main.pk1 = course_users.crsmain_pk1
+inner join users on users.pk1 = course_users.users_pk1
+where course_main.course_id in ([course_id])

@@ -43,7 +43,7 @@ select pool.crsmain_pk1 as course_pk1
 from qti_asi_data as pool
 inner join qti_asi_data as section on section.parent_pk1 = pool.pk1
 inner join qti_asi_data as question on question.parent_pk1 = section.pk1
-inner join course_main on course_main.pk1 = qti_asi_data.crsmain_pk1
+inner join course_main on course_main.pk1 = pool.crsmain_pk1
 left outer join qti_block_mapping as block on block.question_pk1 = question.pk1
 where pool.crsmain_pk1 = [course_pk1]
 	and pool.bbmd_asi_type = 1
