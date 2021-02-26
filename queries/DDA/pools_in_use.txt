@@ -48,5 +48,5 @@ left outer join qti_block_mapping as block on block.question_pk1 = question.pk1
 where pool.crsmain_pk1 = [course_pk1]
 	and pool.bbmd_asi_type = 1
 	and pool.bbmd_assessmenttype = 4
-group by pool.crsmain_pk1, pool.pk1, pool.title
+group by course_main.course_id, pool.crsmain_pk1, pool.pk1, pool.title
 order by pool.title
