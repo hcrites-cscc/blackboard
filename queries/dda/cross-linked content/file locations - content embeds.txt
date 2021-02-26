@@ -76,6 +76,6 @@ from (
 ) as content
 left outer join (    
     select *
-    from dblink('dbname=[your_saas_schema]_cms_doc user=[your_dda_username] password=[your_dda_password]', 'select xyf_files.entry_id, xyf_urls.full_path from xyf_files left outer join xyf_urls on xyf_files.file_id = xyf_urls.file_id' where xyf_urls.full_path like '[file_location]%')
+    from dblink('dbname=[your_saas_schema]_cms_doc user=[your_dda_username] password=[your_dda_password]', 'select xyf_files.entry_id, xyf_urls.full_path from xyf_files left outer join xyf_urls on xyf_files.file_id = xyf_urls.file_id where xyf_urls.full_path like ''[file_location]%''')
     as xyf_files(entry_id int, full_path text)
 ) as xyf_files on content.xid = '/xid-'||cast(xyf_files.entry_id as text)||'_1'    
