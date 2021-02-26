@@ -1,0 +1,79 @@
+============================================
+Identify specific location of all attachments and embeds by content type and course
+============================================
+ * @author  hcrites@cscc.edu (Heather Crites)
+ * @created 06/15/2018	
+ * @updated 02/17/2021
+============================================
+
+
+
+
+============================================
+Notes:
+============================================
+These queries are useful for identifying files in use by location, cross-linked content (files in course home directories being used by other courses) and missing files (files which have been deleted but are still being referenced).
+
+there are multiple queries listed below for different content types.
+
+SaaS DDA uses multiple databases for cms_doc and the base schemas. To connect the two databases, I use the dblink function in PostgreSQL. If your instance does not have this installed, open a ticket to request it.
+
+In the query, replace the following variables with your institution-specific values:
+	[your_saas_schema]: use your specific SaaS schema value
+	[your_dda_username]: use your DDA username
+	[your_dda_password]: use your DDA password
+	
+To narrow down the query by specific course, there are two elements to adjust:
+	[course_pk1]: enter the specific course_main.pk1 value to look up a specific course
+	[file_location]: enter the specific xyf_urls.full_path value to look up a specific location
+
+Searching a specific file location will run much quicker than searching all of xyf_urls.
+
+
+
+
+============================================
+Returns:
+============================================
+  COURSE_PK1: the pk1 value of the course
+  COURSE_ID: the course_id of the course
+  COURSE_HOME: the course home directory, protected file location, /institution/ root, or other location of file attachments and embeds.  Note: deleted files will show an empty string.
+  EMBED_COUNT: the number of file referenced at this location for this embed_type found
+  EMBED_TYPE: the type of object containing the file reference:
+	Attached: content with an attachment
+	Embedded Content: content with an embedded file
+	Announcement: announcement with an embedded file
+	Assessment: test, survey, pool, or question with an embedded file
+	Discussion Forum: discussion board forum with an embedded file
+	Discussion Post: discussion board post or reply with an embedded file
+	Blog or Journal: blog or journal with an embedded file
+	Blog Entry: blog or journal entry with an embedded file
+	Banner: course or organization banner
+  	
+	
+
+	
+============================================
+Query:
+============================================
+select course_main.pk1 as course_pk1
+    , course_contents.pk1 as content_pk1
+    , course_contents.cnthndlr_handle
+    , course_contents.title
+    , course_main.course_id
+    , files.link_name
+    , substring(xyf_files.file_name from '\.([^\.]*)$') as extension
+    , case when substr(files.file_name,1,1) = '/' then replace(replace(files.file_name,'/xid-',''), '_1','') else '0' end as xid
+    , xyf_files.full_path
+    , files.file_size
+    , files.dtmodified
+from course_contents_files 
+left outer join files on course_contents_files.files_pk1 = files.pk1 
+left outer join course_contents on course_contents_files.course_contents_pk1 = course_contents.pk1 
+left outer join course_main on course_contents.crsmain_pk1 = course_main.pk1  
+left outer join ( 
+    select *
+    from dblink('dbname=[your_saas_schema]_cms_doc user=[your_dda_username] password=[your_dda_password]', 'select xyf_files.entry_id, xyf_urls.full_path from xyf_files left outer join xyf_urls on xyf_files.file_id = xyf_urls.file_id')
+    as xyf_files(entry_id int, file_name text, full_path text)
+) as xyf_files on files.file_name = '/xid-'||cast(xyf_files.entry_id as text)||'_1' 
+where course_main.pk1 in ([course_pk1])

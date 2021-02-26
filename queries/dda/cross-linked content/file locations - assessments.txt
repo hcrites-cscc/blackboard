@@ -1,0 +1,81 @@
+============================================
+Identify specific location of all assessment file embeds
+============================================
+ * @author  hcrites@cscc.edu (Heather Crites)
+ * @created 06/15/2018	
+ * @updated 02/26/2021
+============================================
+
+
+
+
+============================================
+Notes:
+============================================
+This query targets file embeds in assessments.  It is useful for identifying files in use by location, cross-linked content (files in course home directories being used by other courses) and missing files (files which have been deleted but are still being referenced).
+
+This query returns the entry in qti_asi_data which contains the embedded file. Assessments use the same table for tests, surveys, pools, sections, and questions so the returned value may be any combination of those assessment types.  You will likely need to pull separate queries to identify the parent test, survey, or pool if the data type is a section or question. The parent_pk1 value of a question is its section. The parent_pk1 value of the section is the exam, survey, or pool.
+
+SaaS DDA uses multiple databases for cms_doc and the base schemas. To connect the two databases, I use the dblink function in PostgreSQL. If your instance does not have this installed, open a ticket to request it.
+
+In the query, replace the following variables with your institution-specific values:
+	[your_saas_schema]: use your specific SaaS schema value
+	[your_dda_username]: use your DDA username
+	[your_dda_password]: use your DDA password
+	
+To narrow down the query by specific course, there are two elements to adjust:
+	[course_pk1]: enter the specific course_main.pk1 value to look up a specific course
+	[file_location]: enter the specific xyf_urls.full_path value to look up a specific location
+
+Searching a specific file location will run much quicker than searching all of xyf_urls.
+
+
+
+
+============================================
+Returns:
+============================================
+  COURSE_PK1: the pk1 value of the course
+  CONTENT_PK1: the pk1 value of the content
+  CNTHNDLR_HANDLE: a hard-coded 'Assessment' to identify the type of content
+  TITLE: the title of the assessment object
+  COURSE_ID: the course_id of the course
+  URL_COUNT: the number of files found in the assessment object
+  XID: the Xythos ID number found in the body of the assessment object
+  ENTRY_ID: the Xythos ID number of the embedded file
+  FULL_PATH: the web folder file location of the embedded file
+  
+  
+  	
+	
+
+	
+============================================
+Query:
+============================================
+select assessment.course_pk1
+	, assessment.content_pk1
+	, assessment.cnthndlr_handle
+	, assessment.title
+	, assessment.course_id
+	, assessment.url_count
+	, xyf_files.xid
+	, xyf_files.entry_id
+	, xyf_files.full_path
+from (
+	select course_main.pk1 as course_pk1
+		, qti_asi_data.pk1 as content_pk1
+		, 'Assessment' as cnthndlr_handle
+		, qti_asi_data.title
+		, course_main.course_id
+		, (length(encode(qti_asi_data.data::bytea, 'escape')) - length(replace(encode(qti_asi_data.data::bytea, 'escape'), 'bbcswebdav', '')) )::int / length('bbcswebdav') as url_count
+		, array_to_string(regexp_matches(encode(qti_asi_data.data::bytea, 'escape'), 'bbcswebdav([^\s"''<\)]+)','g'), '') as xid
+	from qti_asi_data
+	left outer join course_main on qti_asi_data.crsmain_pk1 = course_main.pk1 
+    where (course_main.pk1 in ([course_pk1]))
+) as assessment
+left outer join (    
+    select *
+    from dblink('dbname=[your_saas_schema]_cms_doc user=[your_dda_username] password=[your_dda_password]', 'select xyf_files.entry_id, xyf_urls.full_path from xyf_files left outer join xyf_urls on xyf_files.file_id = xyf_urls.file_id' where xyf_urls.full_path like '[file_location]%')
+    as xyf_files(entry_id int, full_path text)
+) as xyf_files on assessment.xid = '/xid-'||cast(xyf_files.entry_id as text)||'_1'    

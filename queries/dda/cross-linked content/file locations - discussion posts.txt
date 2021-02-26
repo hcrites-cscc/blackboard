@@ -1,0 +1,83 @@
+============================================
+Identify specific location of all discussion board post file embeds
+============================================
+ * @author  hcrites@cscc.edu (Heather Crites)
+ * @created 06/15/2018	
+ * @updated 02/26/2021
+============================================
+
+
+
+
+============================================
+Notes:
+============================================
+This query targets file embeds in discussion board posts.  It is useful for identifying files in use by location, cross-linked content (files in course home directories being used by other courses) and missing files (files which have been deleted but are still being referenced).
+
+SaaS DDA uses multiple databases for cms_doc and the base schemas. To connect the two databases, I use the dblink function in PostgreSQL. If your instance does not have this installed, open a ticket to request it.
+
+In the query, replace the following variables with your institution-specific values:
+	[your_saas_schema]: use your specific SaaS schema value
+	[your_dda_username]: use your DDA username
+	[your_dda_password]: use your DDA password
+	
+To narrow down the query by specific course, there are two elements to adjust:
+	[course_pk1]: enter the specific course_main.pk1 value to look up a specific course
+	[file_location]: enter the specific xyf_urls.full_path value to look up a specific location
+
+Searching a specific file location will run much quicker than searching all of xyf_urls.
+
+
+
+
+============================================
+Returns:
+============================================
+  COURSE_PK1: the pk1 value of the course
+  CONTENT_PK1: the pk1 value of the content
+  CNTHNDLR_HANDLE: a hard-coded 'Discussion Post' to identify the type of content
+  SUBJECT: the title of the discussion post
+  COURSE_ID: the course_id of the course
+  URL_COUNT: the number of files found in the discussion post
+  XID: the Xythos ID number found in the message of the discussion post
+  ENTRY_ID: the Xythos ID number of the embedded file
+  FULL_PATH: the web folder file location of the embedded file
+  MSG_TEXT: the full body of the message text
+  
+  	
+	
+
+	
+============================================
+Query:
+============================================
+select discussion_post.course_pk1
+	, discussion_post.content_pk1
+	, discussion_post.cnthndlr_handle
+	, discussion_post.subject
+	, discussion_post.course_id
+	, discussion_post.url_count
+	, xyf_files.xid
+	, xyf_files.entry_id
+	, xyf_files.full_path
+	, discussion_post.msg_text	    
+from (
+	select course_main.pk1 as course_pk1
+		, msg_main.pk1 as content_pk1
+		, 'Discussion Post' as cnthndlr_handle
+		, msg_main.subject
+		, course_main.course_id
+		, (length(msg_main.msg_text) - length(replace(msg_main.msg_text, 'bbcswebdav', '')) )::int / length('bbcswebdav') as url_count
+		, array_to_string(regexp_matches(msg_main.msg_text, 'bbcswebdav([^\s"''<\)]+)','g'), '') as xid
+		, msg_main.msg_text
+	from msg_main 
+	left outer join forum_main on msg_main.forummain_pk1 = forum_main.pk1 	
+	left outer join conference_main on forum_main.confmain_pk1 = conference_main.pk1 	
+	left outer join course_main on conference_main.crsmain_pk1 = course_main.pk1 
+    where (course_main.pk1 in ([course_pk1]))
+) as discussion_post
+left outer join (    
+    select *
+    from dblink('dbname=[your_saas_schema]_cms_doc user=[your_dda_username] password=[your_dda_password]', 'select xyf_files.entry_id, xyf_urls.full_path from xyf_files left outer join xyf_urls on xyf_files.file_id = xyf_urls.file_id' where xyf_urls.full_path like '[file_location]%')
+    as xyf_files(entry_id int, full_path text)
+) as xyf_files on discussion_post.xid = '/xid-'||cast(xyf_files.entry_id as text)||'_1'    
