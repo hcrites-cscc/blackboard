@@ -57,7 +57,7 @@ select content.course_pk1
 	, content.title
 	, content.course_id
 	, content.url_count
-	, xyf_files.xid
+	, content.xid
 	, xyf_files.entry_id
 	, xyf_files.full_path
 	, content.main_data	 

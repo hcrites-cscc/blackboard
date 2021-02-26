@@ -59,7 +59,7 @@ select assessment.course_pk1
 	, assessment.title
 	, assessment.course_id
 	, assessment.url_count
-	, xyf_files.xid
+	, assessment.xid
 	, xyf_files.entry_id
 	, xyf_files.full_path
 from (

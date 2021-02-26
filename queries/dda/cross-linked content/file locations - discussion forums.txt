@@ -59,7 +59,7 @@ select forum.course_pk1
 	, forum.name
 	, forum.course_id
 	, forum.url_count
-	, xyf_files.xid
+	, forum.xid
 	, xyf_files.entry_id
 	, xyf_files.full_path
 	, forum.description	    

@@ -59,7 +59,7 @@ select announcement.course_pk1
 	, announcement.subject
 	, announcement.course_id
 	, announcement.url_count
-	, xyf_files.xid
+	, announcement.xid
 	, xyf_files.entry_id
 	, xyf_files.full_path
 	, announcement.user_id

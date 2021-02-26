@@ -59,7 +59,7 @@ select blog.course_pk1
 	, blog.title
 	, blog.course_id
 	, blog.url_count
-	, xyf_files.xid
+	, blog.xid
 	, xyf_files.entry_id
 	, xyf_files.full_path
 	, blog.description	    

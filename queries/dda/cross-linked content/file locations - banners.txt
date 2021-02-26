@@ -37,7 +37,6 @@ Returns:
   COURSE_PK1: the pk1 value of the course
   CNTHNDLR_HANDLE: a hard-coded 'Banner' to identify the type of content
   BANNER_URL: the full URL of the course banner
-  XID: the Xythos ID number found in the body of the content
   ENTRY_ID: the Xythos ID number of the embedded file
   FULL_PATH: the web folder file location of the embedded file
   
@@ -52,7 +51,6 @@ select course_main.course_id
 	, course_main.pk1 as course_pk1
 	, 'Banner' as cnthndlr_handle
 	, course_main.banner_url
-	, xyf_files.xid
 	, xyf_files.entry_id
 	, xyf_files.full_path
 from course_main	

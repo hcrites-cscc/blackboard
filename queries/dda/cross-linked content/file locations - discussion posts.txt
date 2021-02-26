@@ -57,7 +57,7 @@ select discussion_post.course_pk1
 	, discussion_post.subject
 	, discussion_post.course_id
 	, discussion_post.url_count
-	, xyf_files.xid
+	, discussion_post.xid
 	, xyf_files.entry_id
 	, xyf_files.full_path
 	, discussion_post.msg_text	    
