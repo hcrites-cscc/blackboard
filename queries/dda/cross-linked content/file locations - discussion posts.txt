@@ -25,7 +25,7 @@ To narrow down the query by specific course, there are two elements to adjust:
 	[course_pk1]: enter the specific course_main.pk1 value to look up a specific course
 	[file_location]: enter the specific xyf_urls.full_path value to look up a specific location
 
-Searching a specific file location will run much quicker than searching all of xyf_urls.
+Searching a specific file location will run much quicker than searching all of xyf_urls. If you do limit it to a specific file location, I recommend adding a filter at the end of the query to only display objects which are linking to that file location (e.g. "where xyf_files.entry_id is not null").
 
 
 
