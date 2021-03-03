@@ -1,0 +1,49 @@
+============================================
+Get list of courses with Collaborate recordings
+============================================
+ * @author  hcrites@cscc.edu (Heather Crites)
+ * @created 09/10/2020	
+ * @updated 03/02/2021
+============================================
+
+
+
+
+============================================
+Notes:
+============================================
+This is useful for identifying courses which are linked to at least one Collaborate recording.
+
+
+
+
+============================================
+Returns:
+============================================
+  TERM_NAME: the name of the associated course term
+  COURSE_ID: the course_id of the course
+  INSTRUCTORS: a comma-delimited list of instructors (note: they may be disabled or unavailable in the course)
+  RECORDING_COUNT: the number of Collaborate recordings
+	
+
+
+	
+============================================
+Query:
+============================================
+
+select distinct lt.name as term_name
+	, lc.course_number as course_id
+	, listagg(distinct lp.first_name||' '||lp.last_name, ', ') as instructors
+	, count(distinct cm.id) as recording_count
+from cdm_clb.media as cm 
+inner join cdm_clb.session as cs on cs.id = cm.session_id
+inner join cdm_clb.room as cr on cr.id = cs.room_id
+left outer join cdm_map.course_room as mcr on mcr.clb_room_id = cr.id 
+left outer join cdm_lms.course as lc on lc.id = mcr.lms_course_id
+left outer join cdm_lms.term as lt on lt.id = lc.term_id
+left outer join cdm_lms.person_course as lpc on lpc.course_id = lc.id and lpc.course_role_source_code in ('P', 'PE')
+left outer join cdm_lms.person as lp on lp.id = lpc.person_id 
+where cm.media_category = 'R'
+group by lt.name, lc.course_number
+order by course_id

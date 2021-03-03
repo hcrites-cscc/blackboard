@@ -1,0 +1,49 @@
+============================================
+Get recording data by term
+============================================
+ * @author  hcrites@cscc.edu (Heather Crites)
+ * @created 09/10/2020	
+ * @updated 03/02/2021
+============================================
+
+
+
+
+============================================
+Notes:
+============================================
+This is useful for identifying number of recordings, length, and file size of Collaborate recordings by term.
+
+
+
+
+============================================
+Returns:
+============================================
+  TERM_NAME: the name of the associated course term
+  RECORDING_NUMBER: the number of recordings found to be associated with that course term
+  RECORDING_DURATION_HOURS: the total number of hours of recordings found
+  RECORDING_SIZE_GIGABYTES: the total size of all recordings in gigabytes
+	
+
+
+	
+============================================
+Query:
+============================================
+
+select lt.name as term_name
+	, count(distinct cm.id) as recording_number
+	, sum(cm.duration)/1000/60/60 as recording_duration_hours
+	, sum(cm.size)/1024/1024/1024 as recording_size_gigabytes
+from cdm_clb.media as cm 
+inner join cdm_clb.session as cs on cs.id = cm.session_id
+inner join cdm_clb.room as cr on cr.id = cs.room_id
+left outer join cdm_map.course_room as mcr on mcr.clb_room_id = cr.id 
+left outer join cdm_lms.course as lc on lc.id = mcr.lms_course_id
+left outer join cdm_lms.term as lt on lt.id = lc.term_id
+left outer join cdm_lms.person_course as lpc on lpc.course_id = lc.id and lpc.course_role_source_code = 'P'
+left outer join cdm_lms.person as lp on lp.id = lpc.person_id 
+where cm.media_category = 'R'
+group by lt.name
+order by term_name
