@@ -1,0 +1,48 @@
+============================================
+Identify internal course logs files
+============================================
+ * @author  hcrites@cscc.edu (Heather Crites)
+ * @created 09/10/2020	
+ * @updated 01/12/2021
+============================================
+
+
+
+
+============================================
+Notes:
+============================================
+This is useful for identifying log files from restores, imports, archives, exports, common cartridges, and autoArchives.  These files are small but can add up in storage size.
+
+This runs via the cms_doc database
+
+
+
+
+
+
+
+============================================
+Returns:
+============================================
+	[created_date] – the creation date for the archive files
+	[file_name] – the name of the archive file
+	[file_extension] – the file extension of the archive file 
+	[file_mime] – the MIME type of the archive file
+	[file_size] – the file size in bytes
+	[file_path] – the full path to the archive file
+	[file_id] – the xythos file id
+	{file_entry_id] – the xythos entry id
+
+	
+	
+
+	
+============================================
+Query:
+============================================
+select to_char(xyf_files.creation_date,'mm/dd/yyyy') as created_date, xyf_urls.file_name, substring(xyf_urls.file_name from '\.([^\.]*)$') as file_extension, xyf_files.mime_type as file_mime, xyf_files.file_size, xyf_urls.full_path as file_path, xyf_files.file_id as file_id, xyf_files.entry_id as file_entry_id
+from xyf_files
+inner join xyf_urls on xyf_urls.file_id = xyf_files.file_id
+where (xyf_urls.full_path like '/internal/courses/%/internal_logs/%' or xyf_urls.full_path like '/internal/orgs/%/internal_logs/%')
+order by xyf_urls.full_path
