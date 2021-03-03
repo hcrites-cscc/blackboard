@@ -1,5 +1,5 @@
 ============================================
-Identify which tests are deployed / undeployed
+Identify archive, export, and common cartridge files 
 ============================================
  * @author  hcrites@cscc.edu (Heather Crites)
  * @created 09/10/2020	
@@ -12,7 +12,7 @@ Identify which tests are deployed / undeployed
 ============================================
 Notes:
 ============================================
-This is useful for identifying archive, export, and common cartridge files created by instructors.
+This is useful for identifying archive, export, and common cartridge files created by instructors and system admins via the Blacboard GUI. This does not identify auto-archives.
 
 This runs via the cms_doc database
 
