@@ -27,7 +27,8 @@ Returns:
   COURSE_ID: the course_id of the course
   QAD_PK1: the pk1 value of the pool
   TITLE: the title of the pool
-  BLOCK_COUNT: the number of blocks using this particular pool
+  QUESTION_SET_COUNT: the number of question sets using this particular pool
+  RANDOM_BLOCK_COUNT: the number of random blocks using this particular pool
   	
 	
 
@@ -39,12 +40,14 @@ select pool.crsmain_pk1 as course_pk1
 	, course_main.course_id
 	, pool.pk1 as pool_pk1
 	, pool.title
-	, count(block.pk1) as block_count
+	, count(block.pk1) as question_set_count
+	, count(random_block.pk1) as random_block_count
 from qti_asi_data as pool
 inner join qti_asi_data as section on section.parent_pk1 = pool.pk1
 inner join qti_asi_data as question on question.parent_pk1 = section.pk1
 inner join course_main on course_main.pk1 = pool.crsmain_pk1
 left outer join qti_block_mapping as block on block.question_pk1 = question.pk1
+left outer join qti_asi_data as random_block on random_block.objectbank_pk1 = pool.pk1
 where pool.crsmain_pk1 = [course_pk1]
 	and pool.bbmd_asi_type = 1
 	and pool.bbmd_assessmenttype = 4
