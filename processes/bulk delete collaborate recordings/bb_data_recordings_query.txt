@@ -1,0 +1,77 @@
+============================================
+Get a list of Collaborate Recordings by date range
+============================================
+ * @author  hcrites@cscc.edu (Heather Crites)
+ * @created 03/10/2021
+ * @updated 05/11/2021
+============================================
+
+
+
+
+============================================
+Notes:
+============================================
+This is useful for identifying undeleted Collaborate recordings by a specific date range.  You can adjust the WHERE clause to search for specific courses, terms, last viewed dates, or other criteria.
+
+In the query, replace the following variables with your institution-specific values:
+	[start_date]: enter a start date for the look ups
+	[end_date]: enter an end date for the look ups
+
+Alternatives:
+	cm.end_time < [date] --look up recordings before a specific date
+	cm.last_playback_time between [start_date] and [end_date] --look up last playback between two dates
+
+
+
+
+
+============================================
+Returns:
+============================================
+  TERM_NAME: the name of the term in which the course is associated. Will return empty for group-based recordings or courses without a term association.
+  COURSE_ID: the course_id of the course
+  COURSE_NAME: the name of the course
+  ROOM_NAME: the name of the Collaborate room
+  RECORDING_ID: the primary key of the recording in Bb Data
+  RECORDING_NAME: the name of the recording
+  RECORDING_DURATION: the length of the recording in seconds
+  RECORDING_SIZE: the size of the recording in bytes
+  RECORDING_CREATED: the date and time the media was created
+  START_TIME: the date and time the media started. For example, when a recording started.
+  RECORDING_LAST_PLAYBACK: the date and time when the recording was last played
+  FULL_NAME: a concatenation of room name and recording name - matches the return values from the REST API.
+	
+	
+
+	
+============================================
+Query:
+============================================
+ALTER SESSION SET TIMESTAMP_TYPE_MAPPING = 'TIMESTAMP_LTZ';
+ALTER SESSION SET TIMEZONE = 'GMT';
+
+select distinct 
+    lt.name as term_name
+  , lc.course_number as course_id
+  , lc.name as course_name
+  , cr.name as room_name
+  , cm.id as recording_id
+  , cm.name as recording_name
+  , cm.duration as recording_duration
+  , cm.size as recording_size
+  , cm.created_time as recording_created
+  , cm.start_time as start_time
+  , cm.last_playback_time as recording_last_playback
+  , cr.name||' - '||cm.name as full_name
+ from cdm_clb.media as cm 
+ inner join cdm_clb.session as cs on cs.id = cm.session_id
+ inner join cdm_clb.room as cr on cr.id = cs.room_id
+ left outer join cdm_map.course_room as mcr on mcr.clb_room_id = cr.id 
+ left outer join cdm_lms.course as lc on lc.id = mcr.lms_course_id
+ left outer join cdm_lms.term as lt on lt.id = lc.term_id
+ where cm.media_category = 'R'
+    and cm.deleted_time is null
+    and cm.end_time between [start_date] and [end_date]
+ order by cm.created_time, lt.name
+  ;
