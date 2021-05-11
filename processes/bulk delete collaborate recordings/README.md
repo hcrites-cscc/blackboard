@@ -8,8 +8,8 @@ This is a multi-part process:
 
 # Preparation
 You will need to have Python 3 installed and the following modules:
-- [jwt] (https://pyjwt.readthedocs.io/en/stable/)
-- [requests] (https://pypi.org/project/requests/)
+- [jwt](https://pyjwt.readthedocs.io/en/stable/)
+- [requests](https://pypi.org/project/requests/)
 
 You will need these files saved to your computer in the same folder:
 - get_recording_ids_by_date.py
@@ -27,14 +27,14 @@ I recommend using [Notepad++](https://notepad-plus-plus.org/downloads/) to elimi
 I also recommend using an IDE for Python such as IDLE rather than using the command line to execute a script. You will want to screen scrape the returned values and this is easier outside of a command line.  Of course, you can add code to write these values to a text file but I was too lazy and felt it just as easy to copy and paste.
 
 # 1. Pull a list of recordings from the Collaborate REST API
-First, we are going to use the REST API to gather a list of all recordings between two dates.  There are other ways of filtering recordings. You can go to [https://docs.blackboard.com/collaborate/api] (https://docs.blackboard.com/collaborate/api). 
+First, we are going to use the REST API to gather a list of all recordings between two dates.  There are other ways of filtering recordings. You can go to [https://docs.blackboard.com/collaborate/api](https://docs.blackboard.com/collaborate/api). 
 
 Note: the API will only return 1000 recordings per day.  If you think you have more than 1000 recordings on a single day, you may need to use the "offset" parameter to obtain the remaining recordings. 
 
 1. Open the file **get_recording_ids_by_date.py**
 2. Edit the **start_date** and **end_date** variables
 
-> Note: datetime.datetime(2021, 5, 4) will pull May 4, 2021.  datetime.datetime(2021, 12, 4) will pull December 4, 2021.
+> Note: `datetime.datetime(2021, 5, 4)` will pull May 4, 2021.  `datetime.datetime(2021, 12, 4)` will pull December 4, 2021.
 
 3. Save the file
 4. Run the script
@@ -48,6 +48,8 @@ For example:
 ```
 9125a93c8272418f8bfc86fdc3aa1e99	Office Hours - recording_2	5/6/2021 15:13	not public
 ```
+
+It takes about 5 minutes to list about 18,000 recordings.
 
 5. Launch Notepad++
 6. Copy the contents returned by the script and paste into an empty Notepad++ file
@@ -79,7 +81,7 @@ We do this part to associate the recording IDs from Step 1 with the courses we h
 1. Copy columns A, B, C, and D from worksheet "rest"
 2. Paste into columns N, O, P, and Q of worksheet "bb data"
 3. Go to cell M2 in worksheet "bb data"
-4. Paste this formula into cell M2 (include the equals sign): =IF(AND(TEXT(J2,"MM/DD/YYYY")=TEXT(P2,"MM/DD/YYYY"),L2=O2),"","No Match")
+4. Paste this formula into cell M2 (include the equals sign): `=IF(AND(TEXT(J2,"MM/DD/YYYY")=TEXT(P2,"MM/DD/YYYY"),L2=O2),"","No Match")`
 5. Copy cell M2 all the way to the last entry listed
 6. Reconcile differences - a recording might exist in REST but not Bb Data or vice versa. Insert rows and adjust data down as needed. Be careful to keep data together (e.g. don't just copy down one cell, make sure you have all of them)
 7. Save the file **recordings.xlsx**
@@ -104,5 +106,7 @@ a5d966c7dddf463cbdeb6309a3e44583
 4. Save the file **delete_recordings.txt**
 5. Open the file **delete_recordings.py**
 6. Run the script
+
+We processed about 18,000 deletions in about 45 minutes.
 
 You can run either Step 1 or Step 2 (or both) to validate deletion.
