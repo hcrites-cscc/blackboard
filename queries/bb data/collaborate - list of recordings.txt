@@ -4,6 +4,8 @@ Get individual recording information
  * @author  hcrites@cscc.edu (Heather Crites)
  * @created 09/10/2020	
  * @updated 03/02/2021
+ * @updated 12/16/2021 - Chris Bray, added RECORDING_PUBLIC_STATUS, INSTRUCTORS_EMAIL, COLLAB_RECORDING_ID, RECORDING_DURATION_MIN, RECORDING_SIZE_MB, FULL_NAME and filter for non-deleted instructors
+ 
 ============================================
 
 
@@ -22,14 +24,20 @@ Returns:
 ============================================
   TERM_NAME: the name of the associated course term
   COURSE_ID: the course_id of the course
-  INSTRUCTORS: a comma-delimited list of instructors (note: they may be disabled or unavailable in the course)
+  COURSE_NAME: the name of the course
   ROOM_NAME: the name of the Collaborate Room
+  RECORDING_PUBLIC_STATUS: TRUE for a public recording; FALSE for a private recording
+  INSTRUCTORS: a comma-delimited list of instructor names (note: they may be disabled or unavailable in the course)
+  INSTRUCTORS_EMAIL: a comma-delimited list of instructor emails (note: they may be disabled or unavailable in the course)
+  COLLAB_RECORDING_ID: the unique guid for the Collaborate recording (note: may be used with REST)
   RECORDING_ID: the unique identifier for the recording
   RECORDING_NAME: the name of the recording
-  RECORDING_DURATION: the length of the recording in milliseconds
-  RECORDING_SIZE: the size of the recording in bytes
+  RECORDING_DURATION_MIN: the length of the recording in minutes
+  RECORDING_SIZE_MB: the size of the recording in MB
   RECORDING_CREATED: the timestamp in which the recording was created
+  RECORDING_START: the timestamp in which the recording was started
   RECORDING_LAST_PLAYBACK: the timestamp in which the recording was last played
+  FULL_NAME: the room name concatenated with the recording name
   
  	
 
@@ -42,23 +50,30 @@ Query:
 select distinct lt.name as term_name
   , lc.course_number as course_id
   , lc.name as course_name
-  , listagg(distinct lp.first_name||' '||lp.last_name, ', ') as instructors
   , cr.name as room_name
+  , cm.public_access_ind as recording_public_status
+  , listagg(distinct lp.first_name||' '||lp.last_name, ', ') as instructors
+  , listagg(distinct lp.email, ', ') as instructors_email
+  , cm.STAGE:media_uid AS collab_recording_id
   , cm.id as recording_id
   , cm.name as recording_name
-  , cm.duration as recording_duration
-  , cm.size as recording_size
+  , round(cm.duration/1000/60, 2) as recording_duration_min
+  , round(cm.size/1024/1024, 2) as recording_size_mb
   , cm.created_time as recording_created
+  , cm.start_time as recording_start
   , cm.last_playback_time as recording_last_playback
+  , cr.name||' - '||cm.name as full_name
   from cdm_clb.media as cm 
   inner join cdm_clb.session as cs on cs.id = cm.session_id
   inner join cdm_clb.room as cr on cr.id = cs.room_id
   left outer join cdm_map.course_room as mcr on mcr.clb_room_id = cr.id 
   left outer join cdm_lms.course as lc on lc.id = mcr.lms_course_id
   left outer join cdm_lms.term as lt on lt.id = lc.term_id
-  left outer join cdm_lms.person_course as lpc on lpc.course_id = lc.id and lpc.course_role_source_code in ('P', 'PE')
+  left outer join cdm_lms.person_course as lpc on lpc.course_id = lc.id and lpc.course_role_source_code in ('P') and lpc.row_deleted_time is null
   left outer join cdm_lms.person as lp on lp.id = lpc.person_id 
   where cm.media_category = 'R'
-  group by lt.name, lc.course_number, lc.name, cr.name, cm.id, cm.name, cm.duration, cm.size, cm.created_time, cm.last_playback_time
+     and cm.deleted_time is null
+	 and lpc.row_deleted_time is null
+  group by lt.name, lc.course_number, lc.name, cr.name, cm.id, cm.name, cm.duration, cm.size, cm.created_time, cm.last_playback_time, cm.public_access_ind, cm.STAGE:media_uid, cm.start_time
 
  
