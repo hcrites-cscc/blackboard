@@ -42,10 +42,10 @@ select distinct
 	qti_asi_data.crsmain_pk1 as course_pk1
 	, course_main.course_id
 	, qti_asi_data.pk1 as qad_pk1
-	, qti_asi_data.title
+	, array_to_string(regexp_matches(encode(qti_asi_data.data::bytea, 'escape'), '<assessment title="(.*?)"','g'), '') as title
 	, coalesce(block.question_count,0) as question_count
 	, case when course_assessment.pk1 is null then 'not deployed' else 'deployed' end as deployed_ind
-	, case when block.block_count is null then 'not using' else 'using' end as using_ind
+	, case when block.block_count is null or block.block_count = 0 then 'not using' else 'using' end as using_ind
 from qti_asi_data 
 left outer join course_assessment on course_assessment.qti_asi_data_pk1 = qti_asi_data.pk1
 inner join course_main on course_main.pk1 = qti_asi_data.crsmain_pk1
@@ -63,4 +63,4 @@ left outer join (
 where qti_asi_data.crsmain_pk1 = [course_pk1]  
    and qti_asi_data.parent_pk1 is null
    and qti_asi_data.bbmd_assessmenttype = 1
-order by qti_asi_data.title
+order by course_id, title, question_count, deployed_ind

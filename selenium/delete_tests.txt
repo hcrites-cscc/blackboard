@@ -1,1 +1,0 @@
-course_pk1	test_pk1	test_title

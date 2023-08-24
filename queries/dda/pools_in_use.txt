@@ -27,6 +27,7 @@ Returns:
   COURSE_ID: the course_id of the course
   QAD_PK1: the pk1 value of the pool
   TITLE: the title of the pool
+  QUESTION_COUNT: the number of questions in the pool
   QUESTION_SET_COUNT: the number of question sets using this particular pool
   RANDOM_BLOCK_COUNT: the number of random blocks using this particular pool
   	
@@ -39,7 +40,8 @@ Query:
 select pool.crsmain_pk1 as course_pk1
 	, course_main.course_id
 	, pool.pk1 as pool_pk1
-	, pool.title
+	, array_to_string(regexp_matches(encode(pool.data::bytea, 'escape'), '<assessment title="(.*?)"','g'), '') as title
+	, count(question.pk1) as question_count
 	, count(block.pk1) as question_set_count
 	, count(random_block.pk1) as random_block_count
 from qti_asi_data as pool
@@ -52,4 +54,4 @@ where pool.crsmain_pk1 = [course_pk1]
 	and pool.bbmd_asi_type = 1
 	and pool.bbmd_assessmenttype = 4
 group by course_main.course_id, pool.crsmain_pk1, pool.pk1, pool.title
-order by pool.title
+order by course_id, title, question_set_count, random_block_count

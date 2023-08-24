@@ -1,1 +1,0 @@
-course_pk1	pool_pk1	pool_title

@@ -1,1 +1,0 @@
-new_directory	old_directory	files_not_to_be_moved_delimited_by_pipe
